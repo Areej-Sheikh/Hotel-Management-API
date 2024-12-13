@@ -22,6 +22,9 @@ app.use(cors({
     credentials: true,
 }))
 
+// Routes
+const userRouter = require('./src/routes/user.route.js')
+app.use('/api/users', userRouter)
 
 // Error Handling
 app.use("*", (req,res,next)=>{
