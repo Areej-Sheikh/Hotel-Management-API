@@ -26,6 +26,9 @@ app.use(cors({
 const userRouter = require('./src/routes/user.route.js')
 app.use('/api/users', userRouter)
 
+const propertyRouter = require('./src/routes/property.route.js')
+app.use('/api/properties', propertyRouter)
+
 // Error Handling
 app.use("*", (req,res,next)=>{
     const error = new Error('Route Not Found');

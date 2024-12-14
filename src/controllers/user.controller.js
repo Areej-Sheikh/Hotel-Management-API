@@ -1,4 +1,4 @@
-const { CustomError } = require("../utils/CustomError");
+const CustomError = require("../utils/CustomError");
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -72,29 +72,36 @@ module.exports.updateprofile = async (req, res, next) => {
 };
 module.exports.resetPassword = async (req, res, next) => {
   const { email } = req.body;
+
   try {
     const user = await User.findOne({ email });
     if (!user) return next(new CustomError("User not found", 404));
 
     const resetToken = jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "5h",
+      expiresIn: "1h",
     });
-    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+    const resetLink = `http://localhost:5713/reset-password/${resetToken}`;
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "process.env.NODEMAILER_MAIL",
-        pass: "process.env.NODEMAILER_APP_PASSWORD",
+        user: process.env.NODEMAILER_MAIL,
+        pass: process.env.NODEMAILER_APP_PASSWORD,
       },
     });
-    const mailOptions = {
-      from: "process.env.NODEMAILER_MAIL",
-      to: email,
-      subject: "Password Reset Request",
-      text: `Please click on the following link to reset your password: ${resetLink}`,
-    };
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "Reset Password link sent to your email" });
+
+    const mailOption = {
+        from: process.env.NODEMAILER_MAIL,
+        to:email,
+        subject:"Password Reset Request",
+        text:`Click on the link to reset your password ${resetLink}`
+    }
+
+    await transporter.sendMail(mailOption);
+
+    res.json({message:"Password reset link sent to your email"})
+
   } catch (error) {
     next(new CustomError(error.message, 500));
   }

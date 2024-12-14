@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express()
 const {authenticateUser} = require('../middlewares/auth.middleware');
-const { currentUser, signup,login, logout,updateprofile , resetPassword} = require('../controllers/userRoute.controller');
+const { currentUser, signup,login, logout,updateprofile , resetPassword} = require('../controllers/user.controller');
 
 router.get('/current-user', authenticateUser,currentUser)
 router.post('/signup', signup)
@@ -10,4 +10,9 @@ router.post('/logout', authenticateUser, logout)
 router.put('/profile', authenticateUser, updateprofile)
 router.post('/reset-password', resetPassword)
 
+// {
+//     "username" : "areej",
+//     "email" : "areej@gmail.com",
+//     "password" : "areej123"
+// }
 module.exports = router;

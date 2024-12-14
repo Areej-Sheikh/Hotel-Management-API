@@ -8,4 +8,4 @@ class CustomError extends Error{
         this.name = this.constructor.name;
     }
 }
-export { CustomError}
+module.exports = CustomError;

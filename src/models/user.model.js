@@ -53,7 +53,7 @@ userSchema.statics.authenticate = async function (email, password) {
     throw new Error("Invalid email or password");
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password.toString(), user.password);
 
   if (!isMatch) {
     throw new Error("Invalid email or password");
