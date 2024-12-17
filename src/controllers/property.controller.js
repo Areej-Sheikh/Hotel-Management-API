@@ -1,10 +1,6 @@
 const CustomError = require("../utils/CustomError");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
 const propertyModel = require("../models/property.model");
 
-// { "title": "", "description": "", "location": "", "price": "", "amenities": "", "images": "" }
 module.exports.createProperty = async (req, res, next) => {
   const { title, description, location, price, amenities, images } = req.body;
   try {

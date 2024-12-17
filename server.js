@@ -29,6 +29,13 @@ app.use('/api/users', userRouter)
 const propertyRouter = require('./src/routes/property.route.js')
 app.use('/api/properties', propertyRouter)
 
+const reviewRouter = require('./src/routes/review.route.js')
+app.use('/api/reviews', reviewRouter)
+
+// const bookingRouter = require('./src/routes/booking.route.js')
+// app.use('/api/bookings', bookingRouter)
+
+
 // Error Handling
 app.use("*", (req,res,next)=>{
     const error = new Error('Route Not Found');

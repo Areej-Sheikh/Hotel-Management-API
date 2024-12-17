@@ -10,9 +10,5 @@ router.post('/logout', authenticateUser, logout)
 router.put('/profile', authenticateUser, updateprofile)
 router.post('/reset-password', resetPassword)
 
-// {
-//     "username" : "areej",
-//     "email" : "areej@gmail.com",
-//     "password" : "areej123"
-// }
-module.exports = router;
+
+module.exports = router; 
