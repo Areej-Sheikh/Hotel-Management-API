@@ -32,8 +32,8 @@ app.use('/api/properties', propertyRouter)
 const reviewRouter = require('./src/routes/review.route.js')
 app.use('/api/reviews', reviewRouter)
 
-// const bookingRouter = require('./src/routes/booking.route.js')
-// app.use('/api/bookings', bookingRouter)
+const bookingRouter = require('./src/routes/booking.route.js')
+app.use('/api/bookings', bookingRouter)
 
 
 // Error Handling
