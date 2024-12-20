@@ -35,6 +35,9 @@ app.use('/api/reviews', reviewRouter)
 const bookingRouter = require('./src/routes/booking.route.js')
 app.use('/api/bookings', bookingRouter)
 
+const adminRouter = require('./src/routes/admin.route.js')
+app.use('/api/admin', adminRouter)
+
 
 // Error Handling
 app.use("*", (req,res,next)=>{
