@@ -46,7 +46,7 @@ module.exports.createBooking = async (req, res, next) => {
       message: "Booking Created Successfully",
       newBooking,
       paymentId,
-      currency: "$",
+      currency: "₹",
       amount: totalAmount,
     });
   } catch (error) {

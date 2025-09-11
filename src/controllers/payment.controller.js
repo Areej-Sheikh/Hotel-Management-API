@@ -9,16 +9,18 @@ module.exports.processPayment = async (req, res, next) => {
     }
 
     const options = {
-      amount: Number(amount) * 100, 
+      amount: Number(amount) * 100,
       receipt: `receipt_${Date.now()}`,
-      payment_capture: 1, 
+      currency: "INR",
+      payment_capture: 1,
     };
 
     const order = await RazorpayInstance.orders.create(options);
     res.status(200).json({ success: true, data: order });
   } catch (error) {
-    console.error("Razorpay Error:", error);
-    next(new CustomError("Error processing payment", 500));
+     console.error("Razorpay Error Object:", error);
+     console.error("Razorpay Error Response Data:", error?.response?.data);
+     next(new CustomError("Error processing payment", 500));
   }
 };
 
