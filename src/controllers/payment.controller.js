@@ -9,10 +9,9 @@ module.exports.processPayment = async (req, res, next) => {
     }
 
     const options = {
-      amount: Number(amount) * 100, // Convert amount to paise
-      currency: currency || "INR",
-      receipt: `receipt_${Date.now()}`, // Generate a unique receipt
-      payment_capture: 1, // Auto-capture payment
+      amount: Number(amount) * 100, 
+      receipt: `receipt_${Date.now()}`,
+      payment_capture: 1, 
     };
 
     const order = await RazorpayInstance.orders.create(options);

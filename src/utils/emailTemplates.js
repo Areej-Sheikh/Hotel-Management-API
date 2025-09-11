@@ -23,7 +23,7 @@ exports.paymentConfirmationTemplate = (userName, propertyDetails, amount) => {
       <p>Your payment has been successfully processed!</p>
       <h3>Payment Details:</h3>
       <ul>
-          <li><strong>Amount:</strong> ₹${amount}</li>
+          <li><strong>Amount:</strong> $${amount}</li>
           <li><strong>Property:</strong> ${propertyDetails}</li>
       </ul>
       <p>Thank you for choosing us!</p>
