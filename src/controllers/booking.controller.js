@@ -13,26 +13,37 @@ module.exports.createBooking = async (req, res, next) => {
     status,
     paymentId,
   } = req.body;
+
   try {
-    const property = await propertyModel.findById(propertyId);
-    if (!propertyId || !totalAmount || !status || !paymentId) {
+    // 1. Validate required fields first
+    if (
+      !propertyId ||
+      !totalAmount ||
+      !status ||
+      !checkInDate ||
+      !checkOutDate
+    ) {
       return next(new CustomError("Missing Required Booking Details", 400));
     }
+
+    // 2. Find the property
+    const property = await propertyModel.findById(propertyId);
     if (!property) {
       return res.status(404).json({ message: "Property Not Found" });
     }
 
+    // 3. Create booking
     const newBooking = await bookingModel.create({
       user: req.user._id,
       property: propertyId,
-      checkInDate: new Date(),
-      checkOutDate: new Date(),
+      checkInDate: new Date(checkInDate),
+      checkOutDate: new Date(checkOutDate),
       totalPrice: totalAmount,
       status,
-      razorpayOrderId: paymentId,
+      razorpayOrderId: paymentId || null, // optional if paymentId not available
     });
-    await newBooking.save();
 
+    // 4. Send confirmation email
     const emailTemplate = bookingConfirmationTemplate(
       req.user.username,
       property.location,
@@ -41,6 +52,7 @@ module.exports.createBooking = async (req, res, next) => {
       totalAmount
     );
     await sendEmail(req.user.email, "Booking Confirmation", emailTemplate);
+
     res.status(201).json({
       success: true,
       message: "Booking Created Successfully",
@@ -50,9 +62,11 @@ module.exports.createBooking = async (req, res, next) => {
       amount: totalAmount,
     });
   } catch (error) {
+    console.error("Error creating booking:", error.message);
     next(new CustomError("Error creating booking", 500));
   }
 };
+
 module.exports.viewBooking = async (req, res, next) => {
   try {
     if (!req.user) {
