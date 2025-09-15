@@ -72,4 +72,36 @@ exports.paymentConfirmationTemplate = (userName, propertyDetails, amount) => {
   </div>
   `;
 };
+exports.bookingCancellationTemplate = (userName, propertyDetails, amount) => {
+  return `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
+    <div style="background: #f44336; color: #fff; padding: 20px; text-align: center;">
+      <h1 style="margin: 0;">AuraStay</h1>
+      <p style="margin: 0;">Booking Cancelled</p>
+    </div>
+    <div style="padding: 20px; color: #333;">
+      <h2>Hello ${userName},</h2>
+      <p>⚠️ Your booking has been successfully cancelled.</p>
+      
+      <h3 style="border-bottom: 1px solid #ddd; padding-bottom: 5px;">Booking Details:</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li><strong>💵 Amount Paid:</strong> ₹${amount}</li>
+        <li><strong>🏨 Property:</strong> ${propertyDetails}</li>
+      </ul>
+
+      <div style="text-align: center; margin: 20px 0;">
+        <a 
+           style="background: #f44336; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+          View Booking
+        </a>
+      </div>
+
+      <p>We’re sorry to see you cancel. If you have any questions or want to rebook, feel free to contact us.</p>
+    </div>
+    <div style="background: #f4f4f4; padding: 10px; text-align: center; font-size: 12px; color: #777;">
+      © 2025 AuraStay · All Rights Reserved
+    </div>
+  </div>
+  `;
+};
 

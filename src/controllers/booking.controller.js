@@ -1,7 +1,10 @@
 const CustomError = require("../utils/CustomError");
 const bookingModel = require("../models/booking.model");
 const propertyModel = require("../models/property.model");
-const { bookingConfirmationTemplate } = require("../utils/emailTemplates");
+const {
+  bookingConfirmationTemplate,
+  bookingCancellationTemplate,
+} = require("../utils/emailTemplates");
 const { sendEmail } = require("../utils/email");
 
 module.exports.createBooking = async (req, res, next) => {
@@ -16,7 +19,6 @@ module.exports.createBooking = async (req, res, next) => {
   } = req.body;
 
   try {
-    // 1. Validate required fields first
     if (
       !propertyId ||
       !totalAmount ||
@@ -27,13 +29,11 @@ module.exports.createBooking = async (req, res, next) => {
       return next(new CustomError("Missing Required Booking Details", 400));
     }
 
-    // 2. Find the property
     const property = await propertyModel.findById(propertyId);
     if (!property) {
       return res.status(404).json({ message: "Property Not Found" });
     }
 
-    // 3. Create booking
     console.log(
       "Creating booking with paymentId:",
       paymentId,
@@ -52,7 +52,6 @@ module.exports.createBooking = async (req, res, next) => {
       razorpayOrderId: razorpayOrderId || null,
     });
 
-    // 4. Send confirmation email
     const emailTemplate = bookingConfirmationTemplate(
       req.user.username,
       property.location,
@@ -77,7 +76,6 @@ module.exports.createBooking = async (req, res, next) => {
   }
 };
 
-
 module.exports.viewBooking = async (req, res, next) => {
   try {
     if (!req.user) {
@@ -100,24 +98,47 @@ module.exports.viewBooking = async (req, res, next) => {
 module.exports.cancelBooking = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const booking = await bookingModel.findById(id);
+    const booking = await bookingModel
+      .findById(id)
+      .populate("property", "title location");
+
     if (!booking) {
       return res.status(404).json({ message: "Booking Not Found" });
     }
+
     if (booking.status === "Cancelled") {
       return res.status(400).json({ message: "Booking is already cancelled" });
     }
-    if (booking.user.toString() != req.user._id.toString()) {
+
+    if (booking.user.toString() !== req.user._id.toString()) {
       return res
         .status(401)
         .json({ message: "Unauthorized to cancel this booking" });
     }
+
+    // Update status
     booking.status = "Cancelled";
     await booking.save();
+
+    console.log("Booking status updated to cancelled for bookingId:", id);
+
+    // Send cancellation email
+    const emailTemplate = bookingCancellationTemplate(
+      req.user.username,
+      booking.property.title,
+      booking.checkInDate,
+      booking.checkOutDate,
+      booking.totalPrice
+    );
+
+    await sendEmail(req.user.email, "Booking Cancelled", emailTemplate);
+    console.log("Cancellation email sent to:", req.user.email);
+
     res
       .status(200)
       .json({ message: "Booking cancelled successfully", booking });
   } catch (error) {
+    console.error("Error cancelling booking:", error.message);
     next(new CustomError("Error cancelling booking", 500));
   }
 };
