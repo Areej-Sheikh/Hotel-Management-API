@@ -12,6 +12,7 @@ module.exports.createBooking = async (req, res, next) => {
     totalAmount,
     status,
     paymentId,
+    razorpayOrderId,
   } = req.body;
 
   try {
@@ -33,6 +34,13 @@ module.exports.createBooking = async (req, res, next) => {
     }
 
     // 3. Create booking
+    console.log(
+      "Creating booking with paymentId:",
+      paymentId,
+      "and razorpayOrderId:",
+      razorpayOrderId
+    );
+
     const newBooking = await bookingModel.create({
       user: req.user._id,
       property: propertyId,
@@ -40,7 +48,8 @@ module.exports.createBooking = async (req, res, next) => {
       checkOutDate: new Date(checkOutDate),
       totalPrice: totalAmount,
       status,
-      razorpayOrderId: paymentId || null, // optional if paymentId not available
+      paymentId: paymentId || null,
+      razorpayOrderId: razorpayOrderId || null,
     });
 
     // 4. Send confirmation email
@@ -58,6 +67,7 @@ module.exports.createBooking = async (req, res, next) => {
       message: "Booking Created Successfully",
       newBooking,
       paymentId,
+      razorpayOrderId,
       currency: "₹",
       amount: totalAmount,
     });
@@ -66,6 +76,7 @@ module.exports.createBooking = async (req, res, next) => {
     next(new CustomError("Error creating booking", 500));
   }
 };
+
 
 module.exports.viewBooking = async (req, res, next) => {
   try {
