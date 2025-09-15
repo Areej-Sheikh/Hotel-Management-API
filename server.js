@@ -1,10 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const { connect } = require("./src/db/db");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 const { errorHandler } = require("./src/middlewares/errorHandler");
-require("dotenv").config({ path: "./.env" });
 const app = express();
 
 connect();
