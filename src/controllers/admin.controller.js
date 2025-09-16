@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model")
 const propertyModel = require("../models/property.model");
 const CustomError = require("../utils/CustomError");
+const bookingModel = require("../models/booking.model");
 
 module.exports.getUsers = async (req, res, next) => {
   try {
@@ -30,25 +31,41 @@ module.exports.deleteProperties = async (req, res, next) => {
     next(new CustomError(error.message, 500));
   }
 };
-module.exports.getBookings = async (req, res, next) => {
+module.exports.getBookings = async (req, res) => {
   try {
-    const bookings = await bookingModel.find().populate("property user");
-    res.status(200).json(bookings);
+    const bookings = await bookingModel
+      .find()
+      .populate("user", "username email")
+      .populate("property", "title price");
+
+    res.status(200).json(bookings || []);
   } catch (error) {
-    next(new CustomError(error.message, 500));
+    console.error("Error in getBookings:", error.message); // 🔍 log real cause
+    res.status(500).json({ message: error.message });
   }
 };
 module.exports.Payments = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, status, paymentStatus } = req.query;
+    let { page = 1, limit = 10, status } = req.query;
+
+    page = Number(page);
+    limit = Number(limit);
+
+    if (isNaN(page) || isNaN(limit)) {
+      return next(new CustomError("Invalid page or limit", 400));
+    }
+
     const filter = {};
     if (status) filter.status = status;
+
     const payments = await bookingModel
       .find(filter)
-      .skip((page - 1) * limit.limit(Number(limit)))
+      .skip((page - 1) * limit)
+      .limit(limit)
       .populate("user", "username email")
       .populate("property", "location price title")
-      .sort({ createAt: -1 });
+      .sort({ createdAt: -1 });
+
     res.status(200).json({
       success: true,
       data: payments,
@@ -59,6 +76,7 @@ module.exports.Payments = async (req, res, next) => {
     next(new CustomError(error.message, 500));
   }
 };
+
 module.exports.singlePayment = async (req, res, next) => {
   try {
     const bookingId = req.params.id;
@@ -87,6 +105,16 @@ module.exports.getProperties = async (req, res, next) => {
       .sort({ createdAt: -1 });
 
     res.status(200).json(properties);
+  } catch (error) {
+    next(new CustomError(error.message, 500));
+  }
+};
+module.exports.deleteBooking = async (req, res, next) => {
+  try {
+    const booking = await bookingModel.findByIdAndDelete(req.params.id);
+    if (!booking) return next(new CustomError("Booking not found", 404));
+
+    res.status(200).json({ message: "Booking deleted successfully" });
   } catch (error) {
     next(new CustomError(error.message, 500));
   }
