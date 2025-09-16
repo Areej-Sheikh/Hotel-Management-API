@@ -2,15 +2,14 @@ const userModel = require("../models/user.model")
 const propertyModel = require("../models/property.model");
 const CustomError = require("../utils/CustomError");
 
-module.exports.getUsers = async (req,res,next)=>{
-    try {
-        const users = userModel.find({isAdmin:false});
-        res.status(200).json(users)
-
-    } catch (error) {  
-        next(new CustomError(error.message, 500))      
-    }
-} 
+module.exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await userModel.find({ isAdmin: false }).lean();
+    res.status(200).json(users);
+  } catch (error) {
+    next(new CustomError(error.message, 500));
+  }
+};
 module.exports.deleteUsers = async(req,res,next)=>{
     try {
         const user = await userModel.findByIdAndDelete(req.params.id)

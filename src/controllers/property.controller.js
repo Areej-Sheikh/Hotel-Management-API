@@ -4,13 +4,28 @@ const propertyModel = require("../models/property.model");
 module.exports.createProperty = async (req, res, next) => {
   const { title, description, location, price, amenities, images } = req.body;
   try {
-    if (!title ||!description ||!location ||!price ||!amenities ||!images) {
+    if (
+      !title ||
+      !description ||
+      !location ||
+      !price ||
+      !amenities ||
+      !images
+    ) {
       next(new CustomError("All fields are required", 400));
     }
-    const newProperty = new propertyModel({title,description,location,price,amenities,images,
+    const newProperty = new propertyModel({
+      title,
+      description,
+      location,
+      price,
+      amenities,
+      images,
       host: req.user._id,
     });
+
     await newProperty.save();
+    await req.user.updateOne({ $push: { properties: newProperty._id } });
     res
       .status(201)
       .json({ message: "Property created successfully", newProperty });

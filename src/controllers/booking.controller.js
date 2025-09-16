@@ -51,6 +51,7 @@ module.exports.createBooking = async (req, res, next) => {
       paymentId: paymentId || null,
       razorpayOrderId: razorpayOrderId || null,
     });
+    await req.user.updateOne({ $push: { bookings: newBooking._id } });
 
     const emailTemplate = bookingConfirmationTemplate(
       req.user.username,

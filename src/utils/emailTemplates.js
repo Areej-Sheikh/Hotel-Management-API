@@ -105,3 +105,4 @@ exports.bookingCancellationTemplate = (userName, propertyDetails, amount) => {
   `;
 };
 
+
