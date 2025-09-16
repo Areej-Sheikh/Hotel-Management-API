@@ -14,3 +14,4 @@ router.get('/bookings', adminMiddleware, getBookings);
 router.get('/payments', adminMiddleware, Payments);
 router.get('/payments/:id', adminMiddleware, singlePayment)
 module.exports = router; 
+ 
