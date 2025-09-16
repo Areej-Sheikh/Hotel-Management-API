@@ -40,7 +40,7 @@ module.exports.getBookings = async (req, res) => {
 
     res.status(200).json(bookings || []);
   } catch (error) {
-    console.error("Error in getBookings:", error.message); // 🔍 log real cause
+    console.error("Error in getBookings:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -93,15 +93,13 @@ module.exports.singlePayment = async (req, res, next) => {
 };
 module.exports.getProperties = async (req, res, next) => {
   try {
-    // Get all non-admin users
     const nonAdminUsers = await userModel
       .find({ isAdmin: false })
       .select("_id username");
 
-    // Query properties where host is in non-admin users
     const properties = await propertyModel
       .find({ host: { $in: nonAdminUsers.map((user) => user._id) } })
-      .populate("host", "username") // populate host username
+      .populate("host", "username")
       .sort({ createdAt: -1 });
 
     res.status(200).json(properties);

@@ -117,13 +117,11 @@ module.exports.cancelBooking = async (req, res, next) => {
         .json({ message: "Unauthorized to cancel this booking" });
     }
 
-    // Update status
     booking.status = "Cancelled";
     await booking.save();
 
     console.log("Booking status updated to cancelled for bookingId:", id);
 
-    // Send cancellation email
     const emailTemplate = bookingCancellationTemplate(
       req.user.username,
       booking.property.title,
