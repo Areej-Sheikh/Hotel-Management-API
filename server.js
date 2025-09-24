@@ -16,7 +16,7 @@ app.use(cookieParser());
 app.use(morgan("tiny"));
 
 //setup cors
-const allowedOrigins = ["https://hotel-management-frontend-topaz.vercel.app/"];
+const allowedOrigins = ["https://hotel-management-frontend-topaz.vercel.app"];
 
 app.use(
   cors({
