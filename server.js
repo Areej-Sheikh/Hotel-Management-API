@@ -17,8 +17,7 @@ app.use(morgan("tiny"));
 
 //setup cors
 const allowedOrigins = [
-  "https://hotel-management-frontend-pink.vercel.app",
-  "https://hotel-management-frontend-qo6dgph2a-areej-fatima.vercel.app",
+  "https://hotel-management-frontend-l1mwz2wqg-areej-fatima.vercel.app/",
 ];
 
 app.use(
