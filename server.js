@@ -18,10 +18,16 @@ app.use(morgan("tiny"));
 //setup cors
 app.use(
   cors({
-    origin: true,
+    origin: "https://hotel-management-frontend-pink.vercel.app",
     credentials: true,
   })
 );
+
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+});
 
 // Routes
 const userRouter = require("./src/routes/user.route.js");
