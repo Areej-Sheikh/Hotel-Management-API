@@ -13,8 +13,7 @@ module.exports.login = async (req, res, next) => {
     if (!ExistingUser) return next(new CustomError("User not found", 404));
     const user = await User.authenticate(email, password);
     const token = user.generateAuthToken();
-    res.cookie("token", token, { expiresIn: "1d" });
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token, user });
   } catch (error) {
     next(new CustomError(error.message, 500));
   }
@@ -29,7 +28,6 @@ module.exports.signup = async (req, res, next) => {
     await newUser.save();
 
     const token = newUser.generateAuthToken();
-    res.cookie("token", token, { expiresIn: "1d" });
     res.status(201).json({ message: "User created successfully", token });
   } catch (error) {
     next(new CustomError(error.message, 500));
