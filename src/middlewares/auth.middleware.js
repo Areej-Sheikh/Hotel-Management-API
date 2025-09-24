@@ -23,6 +23,8 @@ exports.authenticateUser = async (req, res, next) => {
     }
 
     req.user = user;
+    console.log("Cookies received:", req.cookies);
+
     next();
   } catch (error) {
     console.error("Authentication error:", error);

@@ -3,6 +3,10 @@ const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+
+const isProduction = process.env.NODE_ENV === "production";
+console.log("Running in production?", isProduction);
+
 module.exports.currentUser = (req, res, next) => {
   if (!req.user)
     return res.status(401).json({ user: null, message: "Unauthorized" });
@@ -18,9 +22,8 @@ module.exports.login = async (req, res, next) => {
     const token = user.generateAuthToken();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      secure: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -41,9 +44,8 @@ module.exports.signup = async (req, res, next) => {
     const token = newUser.generateAuthToken();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      secure: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -58,9 +60,10 @@ module.exports.logout = async (req, res, next) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      secure: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
     });
+
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     next(new CustomError("Logout Failed", 500));
