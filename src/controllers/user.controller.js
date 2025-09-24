@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 module.exports.currentUser = (req, res, next) => {
+  if (!req.user)
+    return res.status(401).json({ user: null, message: "Unauthorized" });
   res.status(200).json({ user: req.user });
 };
 module.exports.login = async (req, res, next) => {
@@ -12,9 +14,11 @@ module.exports.login = async (req, res, next) => {
     const ExistingUser = await User.findOne({ email });
     if (!ExistingUser) return next(new CustomError("User not found", 404));
     const user = await User.authenticate(email, password);
+    if (!user) return next(new CustomError("Invalid credentials", 401));
     const token = user.generateAuthToken();
     res.cookie("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       secure: true,
       sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
@@ -28,7 +32,7 @@ module.exports.login = async (req, res, next) => {
 module.exports.signup = async (req, res, next) => {
   const { username, email, password } = req.body;
   try {
-    const userExists = await User.findOne({ username, email });
+    const userExists = await User.findOne({ $or: [{ username }, { email }] });
     if (userExists) return next(new CustomError("User already exists", 400));
 
     const newUser = new User({ username, email, password });
@@ -37,6 +41,7 @@ module.exports.signup = async (req, res, next) => {
     const token = newUser.generateAuthToken();
     res.cookie("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       secure: true,
       sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
@@ -53,6 +58,7 @@ module.exports.logout = async (req, res, next) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       secure: true,
     });
     res.status(200).json({ message: "Logged out successfully" });
