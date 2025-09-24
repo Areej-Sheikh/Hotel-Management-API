@@ -13,7 +13,13 @@ module.exports.login = async (req, res, next) => {
     if (!ExistingUser) return next(new CustomError("User not found", 404));
     const user = await User.authenticate(email, password);
     const token = user.generateAuthToken();
-    res.cookie("token", token, { expiresIn: "1d" });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     res.status(200).json({ message: "Login successful", token, user });
   } catch (error) {
     next(new CustomError(error.message, 500));
@@ -29,8 +35,16 @@ module.exports.signup = async (req, res, next) => {
     await newUser.save();
 
     const token = newUser.generateAuthToken();
-    res.cookie("token", token, { expiresIn: "1d" });
-    res.status(201).json({ message: "User created successfully", token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res
+      .status(201)
+      .json({ message: "User created successfully", token, user: newUser });
   } catch (error) {
     next(new CustomError(error.message, 500));
   }
@@ -68,11 +82,11 @@ module.exports.resetPassword = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (!user) return next(new CustomError("User not found", 404));
 
-    const resetToken = jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "1h",
     });
 
-    const resetLink = `http://localhost:5713/reset-password/${resetToken}`;
+    const resetLink = `https://hotel-management-frontend-qo6dgph2a-areej-fatima.vercel.app/reset-password/${resetToken}`;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
