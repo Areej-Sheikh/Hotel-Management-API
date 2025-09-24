@@ -16,9 +16,20 @@ app.use(cookieParser());
 app.use(morgan("tiny"));
 
 //setup cors
+const allowedOrigins = [
+  "https://hotel-management-frontend-pink.vercel.app",
+  "https://hotel-management-frontend-qo6dgph2a-areej-fatima.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "https://hotel-management-frontend-pink.vercel.app",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
