@@ -7,6 +7,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+transporter.verify((err, success) => {
+  if (err) {
+    console.error("Email transporter verification failed:", err);
+  } else {
+    console.log("Email transporter is ready:", success);
+  }
+});
+
 exports.sendEmail = (to, subject, htmlContent) => {
   const mailOptions = {
     from: process.env.NODEMAILER_MAIL,
