@@ -92,7 +92,7 @@ module.exports.resetPassword = async (req, res, next) => {
     if (!user) return next(new CustomError("User not found", 404));
 
     const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
 
     const resetLink = `https://hotel-management-frontend-qo6dgph2a-areej-fatima.vercel.app/reset-password/${resetToken}`;
